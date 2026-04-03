@@ -1,0 +1,56 @@
+{
+  "version": "0.2.0",
+  "name": "@ingestkorea/client-naver-commerce",
+  "description": "INGESTKOREA SDK Naver Commerce Client for Node.js.",
+  "exports": {
+    ".": {
+      "import": "./dist-es/index.js",
+      "require": "./dist-cjs/index.js",
+      "types": "./dist-types/index.d.ts"
+    }
+  },
+  "main": "./dist-cjs/index.js",
+  "module": "./dist-es/index.js",
+  "types": "./dist-types/index.d.ts",
+  "files": [
+    "dist-cjs",
+    "dist-es",
+    "dist-types",
+    "!dist-cjs/test/**",
+    "!dist-es/test/**",
+    "!dist-types/test/**"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run build:cjs && npm run build:es && npm run build:types",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:es": "tsc -p tsconfig.es.json",
+    "build:types": "tsc -p tsconfig.types.json",
+    "clean": "rm -rf dist-*",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ingestkorea/client-naver-commerce.git"
+  },
+  "author": "ingestkorea",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ingestkorea/client-naver-commerce/issues"
+  },
+  "homepage": "https://github.com/ingestkorea/client-naver-commerce#readme",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^22",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@ingestkorea/util-error-handler": "^1.0.2",
+    "@ingestkorea/util-http-handler": "^1.0.0",
+    "bcrypt": "^6.0.0"
+  },
+  "keywords": [
+    "naver",
+    "naver commerce",
+    "naver smartstore"
+  ]
+}

@@ -1,0 +1,11 @@
+export interface MetadataBearer {
+  $metadata: ResponseMetadata;
+}
+
+export interface ResponseMetadata {
+  httpStatusCode?: number;
+  attempts?: number;
+  totalRetryDelay?: number;
+  traceId?: string;
+  rateLimit?: number;
+}
