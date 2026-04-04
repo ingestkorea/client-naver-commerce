@@ -5,9 +5,9 @@ import {
   CommerceCommand,
   Middleware,
   Handler,
+  NaverCommerceError,
 } from "./models/index.js";
 import { middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry } from "./middleware/index.js";
-import { NaverCommerceError } from "./protocols/constants.js";
 
 export class NaverCommerceClient {
   config: CommerceClientResolvedConfig;

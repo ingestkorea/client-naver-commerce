@@ -1,27 +1,12 @@
 import { IngestkoreaError, ingestkoreaErrorCodeChecker } from "@ingestkorea/util-error-handler";
 import { HttpResponse, collectBodyString, destroyStream } from "@ingestkorea/util-http-handler";
-import { ResponseMetadata, CommerceErrorInfo, InvalidInputs } from "../models/index.js";
+import { ResponseMetadata, CommerceErrorInfo, NaverCommerceError } from "../models/index.js";
 import {
   INGESTKOREA_RETRY,
   INGESTKOREA_RETRY_DELAY,
   NAVER_COMMERCE_TRACE_ID,
   NAVER_COMMERCE_RATE_LIMIT,
 } from "../middleware/constants.js";
-
-export class NaverCommerceError extends Error {
-  public readonly code: string;
-  public readonly timestamp: string;
-  public readonly traceId: string;
-  public readonly invalidInputs: InvalidInputs[];
-  constructor(info: CommerceErrorInfo) {
-    super(info.message);
-    this.name = "NaverCommerceError";
-    this.code = info.code;
-    this.timestamp = new Date(info.timestamp).toISOString();
-    this.traceId = info.traceId || "local";
-    this.invalidInputs = info.invalidInputs || [];
-  }
-}
 
 export const deserializeMetadata = (response: HttpResponse): ResponseMetadata => {
   const attempts = response.headers[INGESTKOREA_RETRY] || undefined;

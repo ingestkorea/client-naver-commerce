@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "name": "@ingestkorea/client-naver-commerce",
   "description": "INGESTKOREA SDK Naver Commerce Client for Node.js.",
   "exports": {
