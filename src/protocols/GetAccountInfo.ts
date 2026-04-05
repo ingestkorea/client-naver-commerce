@@ -5,13 +5,13 @@ import {
   ResponseDeserializer,
   GetAccountInfoResult,
 } from "../models/index.js";
-import { GetAccountInfoInput, GetAccountInfoOutput } from "../commands/GetAccountInfo.js";
+import { GetAccountInfoCommandInput, GetAccountInfoCommandOutput } from "../commands/GetAccountInfoCommand.js";
 import { deserializeMetadata, parseBody, parseErrorBody } from "./constants.js";
 
-export const se_GetAccountInfoCommand: RequestSerializer<GetAccountInfoInput, CommerceClientResolvedConfig> = async (
-  input,
-  coifng
-) => {
+export const se_GetAccountInfoCommand: RequestSerializer<
+  GetAccountInfoCommandInput,
+  CommerceClientResolvedConfig
+> = async (input, coifng) => {
   const hostname = "api.commerce.naver.com";
   const path = "/external/v1/seller/account";
   const headers = {
@@ -29,7 +29,7 @@ export const se_GetAccountInfoCommand: RequestSerializer<GetAccountInfoInput, Co
 };
 
 export const de_GetAccountInfoCommand: ResponseDeserializer<
-  GetAccountInfoOutput,
+  GetAccountInfoCommandOutput,
   CommerceClientResolvedConfig
 > = async (response, config) => {
   if (response.statusCode >= 300) await parseErrorBody(response);

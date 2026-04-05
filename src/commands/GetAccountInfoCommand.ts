@@ -9,18 +9,18 @@ import {
 } from "../models/index.js";
 import { se_GetAccountInfoCommand, de_GetAccountInfoCommand } from "../protocols/GetAccountInfo.js";
 
-export interface GetAccountInfoInput extends GetAccountInfoRequest {}
-export interface GetAccountInfoOutput extends MetadataBearer, GetAccountInfoResult {}
+export interface GetAccountInfoCommandInput extends GetAccountInfoRequest {}
+export interface GetAccountInfoCommandOutput extends MetadataBearer, GetAccountInfoResult {}
 
 export class GetAccountInfoCommand extends CommerceCommand<
-  GetAccountInfoInput,
-  GetAccountInfoOutput,
+  GetAccountInfoCommandInput,
+  GetAccountInfoCommandOutput,
   CommerceClientResolvedConfig
 > {
-  input: GetAccountInfoInput;
-  serializer: RequestSerializer<GetAccountInfoInput, CommerceClientResolvedConfig>;
-  deserializer: ResponseDeserializer<GetAccountInfoOutput, CommerceClientResolvedConfig>;
-  constructor(input: GetAccountInfoInput) {
+  input: GetAccountInfoCommandInput;
+  serializer: RequestSerializer<GetAccountInfoCommandInput, CommerceClientResolvedConfig>;
+  deserializer: ResponseDeserializer<GetAccountInfoCommandOutput, CommerceClientResolvedConfig>;
+  constructor(input: GetAccountInfoCommandInput) {
     super(input);
     this.input = {};
     this.serializer = se_GetAccountInfoCommand;

@@ -19,18 +19,18 @@ const LAST_CHANGED_TYPE_SET = new Set<string>(Object.values(LAST_CHANGED_TYPE));
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 300;
 
-export interface ListChangedOrderStatusesInput extends ListChangedOrderStatusesRequest {}
-export interface ListChangedOrderStatusesOutput extends MetadataBearer, ListChangedOrderStatusesResult {}
+export interface ListChangedOrderStatusesCommandInput extends ListChangedOrderStatusesRequest {}
+export interface ListChangedOrderStatusesCommandOutput extends MetadataBearer, ListChangedOrderStatusesResult {}
 
 export class ListChangedOrderStatusesCommand extends CommerceCommand<
-  ListChangedOrderStatusesInput,
-  ListChangedOrderStatusesOutput,
+  ListChangedOrderStatusesCommandInput,
+  ListChangedOrderStatusesCommandOutput,
   CommerceClientResolvedConfig
 > {
-  input: ListChangedOrderStatusesInput;
-  serializer: RequestSerializer<ListChangedOrderStatusesInput, CommerceClientResolvedConfig>;
-  deserializer: ResponseDeserializer<ListChangedOrderStatusesOutput, CommerceClientResolvedConfig>;
-  constructor(input: ListChangedOrderStatusesInput) {
+  input: ListChangedOrderStatusesCommandInput;
+  serializer: RequestSerializer<ListChangedOrderStatusesCommandInput, CommerceClientResolvedConfig>;
+  deserializer: ResponseDeserializer<ListChangedOrderStatusesCommandOutput, CommerceClientResolvedConfig>;
+  constructor(input: ListChangedOrderStatusesCommandInput) {
     super(input);
     const now = new Date();
 

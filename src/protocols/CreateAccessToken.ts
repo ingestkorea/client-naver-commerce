@@ -6,11 +6,11 @@ import {
   ResponseDeserializer,
   CreateAccessTokenResult,
 } from "../models/index.js";
-import { CreateAccessTokenInput, CreateAccessTokenOutput } from "../commands/CreateAccessToken.js";
+import { CreateAccessTokenCommandInput, CreateAccessTokenCommandOutput } from "../commands/CreateAccessTokenCommand.js";
 import { deserializeMetadata, parseBody, parseErrorBody } from "./constants.js";
 
 export const se_CreateAccessTokenCommand: RequestSerializer<
-  CreateAccessTokenInput,
+  CreateAccessTokenCommandInput,
   CommerceClientResolvedConfig
 > = async (input, config) => {
   const hostname = "api.commerce.naver.com";
@@ -45,7 +45,7 @@ export const se_CreateAccessTokenCommand: RequestSerializer<
 };
 
 export const de_CreateAccessTokenCommand: ResponseDeserializer<
-  CreateAccessTokenOutput,
+  CreateAccessTokenCommandOutput,
   CommerceClientResolvedConfig
 > = async (response, config) => {
   if (response.statusCode >= 300) await parseErrorBody(response);

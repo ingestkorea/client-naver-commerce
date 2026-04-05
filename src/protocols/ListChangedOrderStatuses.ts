@@ -7,11 +7,14 @@ import {
   ChangedOrderStatus,
   More,
 } from "../models/index.js";
-import { ListChangedOrderStatusesInput, ListChangedOrderStatusesOutput } from "../commands/ListChangedOrderStatuses.js";
+import {
+  ListChangedOrderStatusesCommandInput,
+  ListChangedOrderStatusesCommandOutput,
+} from "../commands/ListChangedOrderStatusesCommand.js";
 import { deserializeMetadata, parseBody, parseErrorBody } from "./constants.js";
 
 export const se_ListChangedOrderStatusesCommand: RequestSerializer<
-  ListChangedOrderStatusesInput,
+  ListChangedOrderStatusesCommandInput,
   CommerceClientResolvedConfig
 > = async (input, config) => {
   const hostname = "api.commerce.naver.com";
@@ -39,7 +42,7 @@ export const se_ListChangedOrderStatusesCommand: RequestSerializer<
 };
 
 export const de_ListChangedOrderStatusesCommand: ResponseDeserializer<
-  ListChangedOrderStatusesOutput,
+  ListChangedOrderStatusesCommandOutput,
   CommerceClientResolvedConfig
 > = async (response, config) => {
   if (response.statusCode >= 300) await parseErrorBody(response);

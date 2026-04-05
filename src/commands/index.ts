@@ -1,3 +1,3 @@
-export * from "./CreateAccessToken.js";
-export * from "./GetAccountInfo.js";
-export * from "./ListChangedOrderStatuses.js";
+export * from "./CreateAccessTokenCommand.js";
+export * from "./GetAccountInfoCommand.js";
+export * from "./ListChangedOrderStatusesCommand.js";
