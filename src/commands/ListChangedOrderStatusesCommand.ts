@@ -38,9 +38,16 @@ export class ListChangedOrderStatusesCommand extends CommerceCommand<
 
     if (!lastChangedFrom) {
       throw new NaverCommerceError({
-        code: "GENERAL_ERROR",
-        message: "lastChangedFrom must be UTC format (ISO 8601). 2026-01-01T12:34:56.789Z",
+        code: "SDK.GENERAL_ERROR",
+        message: "유효하지 않은 날짜 형식입니다.",
         timestamp: now.toISOString(),
+        invalidInputs: [
+          {
+            name: "lastChangedFrom",
+            type: "not-valid.args",
+            message: "lastChangedFrom must be UTC format (ISO 8601). 2026-01-01T12:34:56.789Z",
+          },
+        ],
       });
     }
 
@@ -67,9 +74,7 @@ const isUtcTimeFormat = (input: any): input is string => {
 
   if (!utcZRegex.test(input)) return false;
 
-  const date = new Date(input);
-
-  return !isNaN(date.getTime());
+  return !isNaN(new Date(input).getTime());
 };
 
 const isLastChangedType = (input: any): input is LastChangedType => {

@@ -1,4 +1,3 @@
-import { IngestkoreaError, ingestkoreaErrorCodeChecker } from "@ingestkorea/util-error-handler";
 import { HttpResponse, collectBodyString, destroyStream } from "@ingestkorea/util-http-handler";
 import { ResponseMetadata, CommerceErrorInfo, NaverCommerceError } from "../models/index.js";
 import {
@@ -29,11 +28,10 @@ export const parseBody = async (output: HttpResponse): Promise<any> => {
   if (!isJsonResponse(headers["content-type"])) {
     await destroyStream(streamBody);
 
-    throw new IngestkoreaError({
-      code: ingestkoreaErrorCodeChecker(statusCode) ? statusCode : 400,
-      type: "Bad Request",
-      message: "Invalid Request",
-      description: "response content-type is not application/json",
+    throw new NaverCommerceError({
+      code: "SDK.BAD_REQUEST",
+      message: "reponse content-type is not application/json",
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -44,11 +42,10 @@ export const parseBody = async (output: HttpResponse): Promise<any> => {
     } catch (e) {
       await destroyStream(streamBody);
 
-      throw new IngestkoreaError({
-        code: 500,
-        type: "Bad Request",
-        message: "Invalid Request",
-        description: "parse response body error",
+      throw new NaverCommerceError({
+        code: "SDK.BAD_REQUEST",
+        message: "parse response body error",
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -62,11 +59,10 @@ export const parseErrorBody = async (output: HttpResponse): Promise<void> => {
   if (!isJsonResponse(headers["content-type"])) {
     await destroyStream(streamBody);
 
-    throw new IngestkoreaError({
-      code: ingestkoreaErrorCodeChecker(statusCode) ? statusCode : 400,
-      type: "Bad Request",
-      message: "Invalid Request",
-      description: "response content-type is not application/json",
+    throw new NaverCommerceError({
+      code: "SDK.REQUEST_ERROR",
+      message: "reponse content-type is not application/json",
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -75,16 +71,14 @@ export const parseErrorBody = async (output: HttpResponse): Promise<void> => {
   await destroyStream(streamBody);
 
   const commerceError = isCommerceErrorInfo(data);
-
   if (commerceError) {
     throw new NaverCommerceError(commerceError);
   }
 
-  throw new IngestkoreaError({
-    code: ingestkoreaErrorCodeChecker(statusCode) ? statusCode : 400,
-    type: "Bad Request",
-    message: "Invalid Request",
-    description: "something wrong",
+  throw new NaverCommerceError({
+    code: "SDK.UNKNOWN_ERROR",
+    message: `${statusCode} - something wrong`,
+    timestamp: new Date().toISOString(),
   });
 };
 
@@ -134,4 +128,20 @@ const isCommerceErrorInfo = (input: unknown): CommerceErrorInfo | null => {
   } catch {
     return null;
   }
+};
+
+export const compact = <T>(obj: T): T => {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => compact(item)) as any;
+  }
+
+  if (typeof obj === "object" && obj !== null) {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, value]) => value !== undefined) // undefined 필드 제거
+        .map(([key, value]) => [key, compact(value)]) // 내부 값 재귀 처리
+    ) as any;
+  }
+
+  return obj;
 };

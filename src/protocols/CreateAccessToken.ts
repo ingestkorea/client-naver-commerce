@@ -7,7 +7,7 @@ import {
   CreateAccessTokenResult,
 } from "../models/index.js";
 import { CreateAccessTokenCommandInput, CreateAccessTokenCommandOutput } from "../commands/CreateAccessTokenCommand.js";
-import { deserializeMetadata, parseBody, parseErrorBody } from "./constants.js";
+import { deserializeMetadata, parseBody, parseErrorBody, compact } from "./constants.js";
 
 export const se_CreateAccessTokenCommand: RequestSerializer<
   CreateAccessTokenCommandInput,
@@ -37,10 +37,10 @@ export const se_CreateAccessTokenCommand: RequestSerializer<
   return new HttpRequest({
     protocol: "https:",
     method: "POST",
-    hostname: hostname,
-    path: path,
-    headers: headers,
-    body: body,
+    hostname,
+    path,
+    headers,
+    body,
   });
 };
 
@@ -50,14 +50,12 @@ export const de_CreateAccessTokenCommand: ResponseDeserializer<
 > = async (response, config) => {
   if (response.statusCode >= 300) await parseErrorBody(response);
 
-  let data = await parseBody(response);
-
-  let contents: any = {};
-  contents = de_CreateAccessTokenResult(data);
+  const data = await parseBody(response);
+  const contents = de_CreateAccessTokenResult(data);
 
   return {
     $metadata: deserializeMetadata(response),
-    ...contents,
+    ...compact(contents),
   };
 };
 

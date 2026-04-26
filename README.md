@@ -1,5 +1,9 @@
 # @ingestkorea/client-naver-commerce
 
+[![npm (scoped)](https://img.shields.io/npm/v/@ingestkorea/client-naver-commerce?style=flat-square)](https://www.npmjs.com/package/@ingestkorea/client-naver-commerce)
+[![npm downloads](https://img.shields.io/npm/dm/@ingestkorea/client-naver-commerce?style=flat-square)](https://www.npmjs.com/package/@ingestkorea/client-naver-commerce)
+[![license](https://img.shields.io/github/license/ingestkorea/client-naver-commerce?style=flat-square)](https://www.npmjs.com/package/@ingestkorea/client-naver-commerce)
+
 ## Description
 
 INGESTKOREA SDK - Naver Commerce Client for Node.js.
@@ -44,6 +48,7 @@ npm install -D @types/node
 
 - CreateAccessToken
 - GetAccountInfo
+- ListBrandsInfo
 - ListChangedOrderStatuses
 
 ## Import

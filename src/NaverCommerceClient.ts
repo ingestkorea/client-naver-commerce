@@ -3,6 +3,7 @@ import {
   CommerceClientConfig,
   CommerceClientResolvedConfig,
   CommerceCommand,
+  MetadataBearer,
   Middleware,
   Handler,
   NaverCommerceError,
@@ -12,7 +13,6 @@ import { middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry } from "
 export class NaverCommerceClient {
   config: CommerceClientResolvedConfig;
   private httpHandler = new NodeHttpHandler({ connectionTimeout: 3000, socketTimeout: 3000 });
-  private requestHandler: Handler = async (input, context) => this.httpHandler.handle(input.request);
 
   constructor(config: CommerceClientConfig) {
     this.config = {
@@ -20,16 +20,20 @@ export class NaverCommerceClient {
     };
   }
 
-  async send<T, P>(command: CommerceCommand<T, P, CommerceClientResolvedConfig>): Promise<P> {
-    const { input, serializer, deserializer } = command;
-
-    const middlewares: Middleware[] = [middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry];
-    const handler = composeMiddleware(middlewares, this.requestHandler);
+  async send<T extends object, P extends MetadataBearer>(
+    command: CommerceCommand<T, P, CommerceClientResolvedConfig>
+  ): Promise<P> {
+    const middlewares: Middleware<T, P>[] = [middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry];
+    const finalHandler: Handler<T, P> = async (input, context) => {
+      const { response } = await this.httpHandler.handle(input.request);
+      const output = await command.deserializer(response, this.config);
+      return { response, output };
+    };
+    const handler = composeMiddleware(middlewares, finalHandler);
 
     try {
-      const request = await serializer(input, this.config);
-      const { response } = await handler({ request }, this.config);
-      const output = await deserializer(response, this.config);
+      const request = await command.serializer(command.input, this.config);
+      const { output } = await handler({ request, input: command.input }, this.config);
       return output;
     } catch (e) {
       throw e;
@@ -37,7 +41,10 @@ export class NaverCommerceClient {
   }
 }
 
-const composeMiddleware = (middlewares: Middleware[], finalHandler: Handler): Handler => {
+export const composeMiddleware = <I extends object, O extends object>(
+  middlewares: Middleware<I, O>[],
+  finalHandler: Handler<I, O>
+): Handler<I, O> => {
   const handler = middlewares.reduceRight((next, middleware) => {
     return middleware(next);
   }, finalHandler);
@@ -48,7 +55,7 @@ const resolveCredentials = (config: CommerceClientConfig): CommerceClientResolve
   const { credentials } = config;
 
   let error = new NaverCommerceError({
-    code: "GENERAL_ERROR",
+    code: "SDK.AUTH_ERROR",
     message: "자격 증명이 유효하지 않습니다.",
     timestamp: new Date().toISOString(),
     invalidInputs: [

@@ -11,7 +11,7 @@ import {
   ListChangedOrderStatusesCommandInput,
   ListChangedOrderStatusesCommandOutput,
 } from "../commands/ListChangedOrderStatusesCommand.js";
-import { deserializeMetadata, parseBody, parseErrorBody } from "./constants.js";
+import { deserializeMetadata, parseBody, parseErrorBody, compact } from "./constants.js";
 
 export const se_ListChangedOrderStatusesCommand: RequestSerializer<
   ListChangedOrderStatusesCommandInput,
@@ -52,7 +52,7 @@ export const de_ListChangedOrderStatusesCommand: ResponseDeserializer<
 
   return {
     $metadata: deserializeMetadata(response),
-    ...contents,
+    ...compact(contents),
   };
 };
 

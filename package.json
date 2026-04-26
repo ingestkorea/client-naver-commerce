@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.4.0",
   "name": "@ingestkorea/client-naver-commerce",
   "description": "INGESTKOREA SDK Naver Commerce Client for Node.js.",
   "exports": {
@@ -44,7 +44,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@ingestkorea/util-error-handler": "^1.0.2",
     "@ingestkorea/util-http-handler": "^1.0.0",
     "bcrypt": "^6.0.0"
   },

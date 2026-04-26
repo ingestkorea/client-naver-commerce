@@ -3,17 +3,18 @@ import {
   CommerceClientResolvedConfig,
   RequestSerializer,
   ResponseDeserializer,
-  GetAccountInfoResult,
+  ListBrandsInfoResult,
+  BrandInfo,
 } from "../models/index.js";
-import { GetAccountInfoCommandInput, GetAccountInfoCommandOutput } from "../commands/GetAccountInfoCommand.js";
+import { ListBrandsInfoCommandInput, ListBrandsInfoCommandOutput } from "../commands/ListBrandsInfoCommand.js";
 import { deserializeMetadata, parseBody, parseErrorBody, compact } from "./constants.js";
 
-export const se_GetAccountInfoCommand: RequestSerializer<
-  GetAccountInfoCommandInput,
+export const se_ListBrandsInfoCommand: RequestSerializer<
+  ListBrandsInfoCommandInput,
   CommerceClientResolvedConfig
 > = async (input, coifng) => {
   const hostname = "api.commerce.naver.com";
-  const path = "/external/v1/seller/account";
+  const path = "/external/v1/product-brands";
   const headers = {
     host: hostname,
     accept: "application/json",
@@ -28,25 +29,28 @@ export const se_GetAccountInfoCommand: RequestSerializer<
   });
 };
 
-export const de_GetAccountInfoCommand: ResponseDeserializer<
-  GetAccountInfoCommandOutput,
+export const de_ListBrandsInfoCommand: ResponseDeserializer<
+  ListBrandsInfoCommandOutput,
   CommerceClientResolvedConfig
 > = async (response, config) => {
   if (response.statusCode >= 300) await parseErrorBody(response);
 
   const data = await parseBody(response);
-  const contents = de_GetAccountInfoResult(data);
+  const contents = de_ListBrandsInfoResult(data);
 
   return {
     $metadata: deserializeMetadata(response),
-    ...compact(contents),
+    data: compact(contents),
   };
 };
 
-const de_GetAccountInfoResult = (output: any): GetAccountInfoResult => {
+const de_ListBrandsInfoResult = (output: any): ListBrandsInfoResult => {
+  return Array.isArray(output) ? output.filter((e) => e != null).map((entry) => de_BrandInfo(entry)) : [];
+};
+
+const de_BrandInfo = (output: any): BrandInfo => {
   return {
-    accountId: output.accountId ?? "",
-    accountUid: output.accountUid ?? "",
-    grade: output.grade ?? "",
+    name: output.name ?? "",
+    id: output.id ?? "",
   };
 };
