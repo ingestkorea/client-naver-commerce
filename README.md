@@ -50,6 +50,7 @@ npm install -D @types/node
 - GetAccountInfo
 - ListBrandsInfo
 - ListChangedOrderStatuses
+- ListProducts
 
 ## Import
 

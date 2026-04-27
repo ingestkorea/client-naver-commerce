@@ -6,4 +6,5 @@ export * from "./CreateAccessToken.js";
 export * from "./GetAccountInfo.js";
 export * from "./ListBrandsInfo.js";
 export * from "./ListChangedOrderStatuses.js";
+export * from "./ListProducts.js";
 export * from "./MetadataBearer.js";

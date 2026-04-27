@@ -19,6 +19,12 @@ export const se_ListBrandsInfoCommand: RequestSerializer<
     host: hostname,
     accept: "application/json",
   };
+  const query = Object.entries(input).reduce((acc, [key, value]) => {
+    if (value !== undefined && value !== null) {
+      acc[key] = String(value); // 숫자(limitCount)나 Enum도 여기서 문자열이 됨
+    }
+    return acc;
+  }, {} as Record<string, string>);
 
   return new HttpRequest({
     protocol: "https:",
@@ -26,6 +32,7 @@ export const se_ListBrandsInfoCommand: RequestSerializer<
     hostname,
     path,
     headers,
+    query,
   });
 };
 
