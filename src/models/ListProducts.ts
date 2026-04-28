@@ -11,7 +11,7 @@ export const PRODUCT_STATUS = {
 } as const;
 
 export interface ListProductsRequest {
-  productStatusTypes: ProductStatusType;
+  productStatusTypes?: ProductStatusType;
   page?: number;
   size?: number;
 }

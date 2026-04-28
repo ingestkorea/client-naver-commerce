@@ -62,8 +62,8 @@ const de_ListChangedOrderStatusesResult = (output: any): ListChangedOrderStatuse
     traceId: output.traceId ?? "",
     data: {
       count: output.data?.count ?? 0,
-      lastChangeStatuses: output.data?.lastChangedStatuses
-        ? de_ChangedOrderStatusList(output.data.lastChangedStatuses)
+      lastChangeStatuses: output.data?.lastChangeStatuses
+        ? de_ChangedOrderStatusList(output.data.lastChangeStatuses)
         : [],
       ...(output.more && { more: de_More(output.more) }),
     },
@@ -83,10 +83,8 @@ const de_ChangedOrderStatus = (output: any): ChangedOrderStatus => {
     productOrderId: output.productOrderId ?? "",
     productOrderStatus: (output.productOrderStatus as ChangedOrderStatus["productOrderStatus"]) ?? "",
     receiverAddressChanged: output.receiverAddressChanged ?? false,
-
-    paymentDate: output.paymentDate ?? "",
+    paymentDate: output.paymentDate ? new Date(output.paymentDate).toISOString() : "",
     claimType: (output.claimType as ChangedOrderStatus["claimType"]) ?? "",
-
     claimStatus: output.claimStatus ?? "",
     giftReceivingStatus: output.giftReceivingStatus ?? "",
   };

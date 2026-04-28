@@ -47,7 +47,9 @@ npm install -D @types/node
 ## Support Methods
 
 - CreateAccessToken
+- DispatchProductOrders
 - GetAccountInfo
+- GetProductOrders
 - ListBrandsInfo
 - ListChangedOrderStatuses
 - ListProducts

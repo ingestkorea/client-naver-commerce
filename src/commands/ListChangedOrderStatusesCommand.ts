@@ -55,8 +55,8 @@ export class ListChangedOrderStatusesCommand extends CommerceCommand<
     const lastChangedType = isLastChangedType(input.lastChangedType) ? input.lastChangedType : null;
 
     this.input = {
-      lastChangedFrom,
-      lastChangedTo,
+      lastChangedFrom: convertKst(lastChangedFrom),
+      lastChangedTo: convertKst(lastChangedTo),
       ...(lastChangedType && { lastChangedType }),
       ...(input.moreSequence && { moreSequence: input.moreSequence }),
       limitCount: Math.min(MAX_LIMIT, Math.max(1, input.limitCount ?? DEFAULT_LIMIT)),
@@ -81,4 +81,10 @@ const isLastChangedType = (input: any): input is LastChangedType => {
   if (!input || typeof input !== "string") return false;
 
   return LAST_CHANGED_TYPE_SET.has(input);
+};
+
+const convertKst = (input: string): string => {
+  const offsetMs = 9 * 3_600_000;
+  const inputMs = new Date(input).getTime();
+  return new Date(inputMs + offsetMs).toISOString().replace("Z", "+09:00");
 };

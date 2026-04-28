@@ -26,7 +26,7 @@ export class ListProductsCommand extends CommerceCommand<
   constructor(input: ListProductsCommandInput) {
     super(input);
     this.input = {
-      productStatusTypes: input.productStatusTypes,
+      productStatusTypes: input.productStatusTypes ? input.productStatusTypes : "SALE",
       page: input.page ?? 1,
       size: Math.min(MAX_LIMIT, Math.max(1, input.size ?? DEFAULT_LIMIT)),
     };

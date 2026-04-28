@@ -6,7 +6,7 @@ export const middlewareIngestkoreaMetadata =
   async (input, context) => {
     input.request.headers = {
       ...input.request.headers,
-      [INGESTKOREA_USER_AGENT]: "@ingestkorea/client-naver-commerce/0.4.x",
+      [INGESTKOREA_USER_AGENT]: "@ingestkorea/client-naver-commerce/0.6.x",
     };
 
     return next(input, context);

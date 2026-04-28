@@ -22,10 +22,8 @@ export type ChangedOrderStatus = {
   productOrderId: string;
   productOrderStatus: ProductOrderStatusType;
   receiverAddressChanged: boolean;
-
   paymentDate: string;
   claimType: ClaimType;
-
   claimStatus: string;
   giftReceivingStatus: string;
 };
