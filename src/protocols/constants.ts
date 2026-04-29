@@ -35,25 +35,21 @@ export const parseBody = async (output: HttpResponse): Promise<any> => {
     });
   }
 
-  const data = await collectBodyString(streamBody);
-  if (data.length) {
-    try {
-      return JSON.parse(data);
-    } catch (e) {
-      await destroyStream(streamBody);
+  try {
+    const data = await collectBodyString(streamBody);
+    return data.length ? JSON.parse(data) : {};
+  } catch (e) {
+    await destroyStream(streamBody);
 
-      throw new NaverCommerceError({
-        code: "SDK.BAD_REQUEST",
-        message: "parse response body error",
-        timestamp: new Date().toISOString(),
-      });
-    }
+    throw new NaverCommerceError({
+      code: "SDK.BAD_REQUEST",
+      message: e instanceof Error ? e.message : "parse response body error",
+      timestamp: new Date().toISOString(),
+    });
   }
-
-  return {};
 };
 
-export const parseErrorBody = async (output: HttpResponse): Promise<void> => {
+export const parseErrorBody = async (output: HttpResponse): Promise<never> => {
   const { statusCode, headers, body: streamBody } = output;
 
   if (!isJsonResponse(headers["content-type"])) {
@@ -61,25 +57,28 @@ export const parseErrorBody = async (output: HttpResponse): Promise<void> => {
 
     throw new NaverCommerceError({
       code: "SDK.REQUEST_ERROR",
-      message: "reponse content-type is not application/json",
+      message: "response content-type is not application/json",
       timestamp: new Date().toISOString(),
     });
   }
 
-  const data = await collectBodyString(streamBody);
+  try {
+    const data = await collectBodyString(streamBody);
+    const commerceError = isCommerceErrorInfo(data);
 
-  await destroyStream(streamBody);
+    if (commerceError) {
+      throw new NaverCommerceError(commerceError);
+    }
 
-  const commerceError = isCommerceErrorInfo(data);
-  if (commerceError) {
-    throw new NaverCommerceError(commerceError);
+    throw new NaverCommerceError({
+      code: "SDK.UNKNOWN_ERROR",
+      message: `${statusCode} - something went wrong`,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (e) {
+    await destroyStream(streamBody);
+    throw e;
   }
-
-  throw new NaverCommerceError({
-    code: "SDK.UNKNOWN_ERROR",
-    message: `${statusCode} - something wrong`,
-    timestamp: new Date().toISOString(),
-  });
 };
 
 const commerceErrorInfoSpec: [keyof CommerceErrorInfo, string][] = [
@@ -89,7 +88,7 @@ const commerceErrorInfoSpec: [keyof CommerceErrorInfo, string][] = [
 ];
 
 const isJsonResponse = (contentType?: string): boolean => {
-  return /application\/json/gi.exec(contentType || "") ? true : false;
+  return contentType?.toLowerCase().includes("application/json") ?? false;
 };
 
 const isCommerceErrorInfo = (input: unknown): CommerceErrorInfo | null => {

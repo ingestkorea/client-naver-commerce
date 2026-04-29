@@ -1,4 +1,3 @@
-import { IngestkoreaError } from "@ingestkorea/util-error-handler";
 import { MetadataBearer, Handler, NaverCommerceError } from "../models/index.js";
 import { INGESTKOREA_REQUEST_LOG, INGESTKOREA_RETRY, INGESTKOREA_RETRY_DELAY } from "./constants.js";
 
@@ -39,13 +38,6 @@ export const middlewareRetry =
         let currentError: NaverCommerceError;
         if (error instanceof NaverCommerceError) {
           currentError = error;
-        } else if (error instanceof IngestkoreaError) {
-          currentError = new NaverCommerceError({
-            code: "SDK.REQUEST_ERROR",
-            message: extractErrorMessage(error),
-            timestamp: new Date().toISOString(),
-            invalidInputs: [],
-          });
         } else {
           currentError = new NaverCommerceError({
             code: "SDK.UNKNOWN_ERROR",
@@ -97,13 +89,3 @@ const isRetryablePrefix = [
   "GW.BLOCK",
   "GW.TIMEOUT",
 ];
-
-const extractErrorMessage = (error: IngestkoreaError): string => {
-  const { code, type, message, description } = error.error;
-  let desc = "HTTP Request Error";
-  if (description && typeof description == "string") {
-    desc = description;
-  }
-
-  return `${code} - ${desc}`;
-};
