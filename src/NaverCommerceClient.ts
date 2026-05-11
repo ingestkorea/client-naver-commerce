@@ -12,7 +12,11 @@ import { middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry } from "
 
 export class NaverCommerceClient {
   config: CommerceClientResolvedConfig;
-  private httpHandler = new NodeHttpHandler({ connectionTimeout: 3000, socketTimeout: 3000 });
+  private httpHandler = new NodeHttpHandler({
+    connectionTimeout: 3000,
+    socketTimeout: 3000,
+    freeSocketTimeout: 1000,
+  });
 
   constructor(config: CommerceClientConfig) {
     this.config = {

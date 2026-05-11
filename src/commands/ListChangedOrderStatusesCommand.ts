@@ -18,6 +18,7 @@ import {
 const LAST_CHANGED_TYPE_SET = new Set<string>(Object.values(LAST_CHANGED_TYPE));
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 300;
+const MAX_RANGE_MS = 24 * 3600 * 1000;
 
 export interface ListChangedOrderStatusesCommandInput extends ListChangedOrderStatusesRequest {}
 export interface ListChangedOrderStatusesCommandOutput extends MetadataBearer, ListChangedOrderStatusesResult {}
@@ -33,7 +34,6 @@ export class ListChangedOrderStatusesCommand extends CommerceCommand<
   constructor(input: ListChangedOrderStatusesCommandInput) {
     super(input);
     const now = new Date();
-
     const lastChangedFrom = isUtcTimeFormat(input.lastChangedFrom) ? input.lastChangedFrom : null;
 
     if (!lastChangedFrom) {
@@ -51,13 +51,43 @@ export class ListChangedOrderStatusesCommand extends CommerceCommand<
       });
     }
 
-    const lastChangedTo = isUtcTimeFormat(input.lastChangedTo) ? input.lastChangedTo : now.toISOString();
-    const lastChangedType = isLastChangedType(input.lastChangedType) ? input.lastChangedType : null;
+    const lastChangedFromMs = new Date(lastChangedFrom).getTime();
+    const lastChangedToMs = isUtcTimeFormat(input.lastChangedTo)
+      ? new Date(input.lastChangedTo).getTime()
+      : lastChangedFromMs + MAX_RANGE_MS;
+
+    const lastChangedTo = new Date(lastChangedToMs).toISOString();
+
+    if (lastChangedToMs > now.getTime()) {
+      throw new NaverCommerceError({
+        code: "SDK.GENERAL_ERROR",
+        message: "조회 기간이 현재 시간보다 초과될 수 없습니다.",
+        timestamp: now.toISOString(),
+        invalidInputs: [
+          { name: "lastChangedFrom", type: "not-valid.args", message: lastChangedFrom },
+          { name: "lastChangedTo", type: "not-valid.args", message: lastChangedTo },
+        ],
+      });
+    }
+
+    const diffMs = lastChangedToMs - lastChangedFromMs;
+
+    if (diffMs > MAX_RANGE_MS) {
+      throw new NaverCommerceError({
+        code: "SDK.GENERAL_ERROR",
+        message: "조회 기간은 최대 24시간을 초과할 수 없습니다.",
+        timestamp: now.toISOString(),
+        invalidInputs: [
+          { name: "lastChangedFrom", type: "not-valid.args", message: lastChangedFrom },
+          { name: "lastChangedTo", type: "not-valid.args", message: lastChangedTo },
+        ],
+      });
+    }
 
     this.input = {
       lastChangedFrom: convertKst(lastChangedFrom),
       lastChangedTo: convertKst(lastChangedTo),
-      ...(lastChangedType && { lastChangedType }),
+      ...(isLastChangedType(input.lastChangedType) && { lastChangedType: input.lastChangedType }),
       ...(input.moreSequence && { moreSequence: input.moreSequence }),
       limitCount: Math.min(MAX_LIMIT, Math.max(1, input.limitCount ?? DEFAULT_LIMIT)),
     };
