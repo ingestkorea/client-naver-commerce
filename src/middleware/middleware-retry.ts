@@ -1,5 +1,14 @@
+import { HttpHandlerError } from "@ingestkorea/util-http-handler";
 import { MetadataBearer, Handler, NaverCommerceError } from "../models/index.js";
-import { INGESTKOREA_REQUEST_LOG, INGESTKOREA_RETRY, INGESTKOREA_RETRY_DELAY } from "./constants.js";
+import {
+  INGESTKOREA_REQUEST_LOG,
+  INGESTKOREA_RETRY,
+  INGESTKOREA_RETRY_DELAY,
+  PREFIX_NAVER_RETRYABLE_CODE,
+  PREFIX_SDK_RETRYABLE_CODE,
+} from "./constants.js";
+
+const isRetryablePrefix = [...PREFIX_NAVER_RETRYABLE_CODE, ...PREFIX_SDK_RETRYABLE_CODE];
 
 export const middlewareRetry =
   <I extends object, O extends MetadataBearer>(next: Handler<I, O>): Handler<I, O> =>
@@ -40,7 +49,7 @@ export const middlewareRetry =
           currentError = error;
         } else {
           currentError = new NaverCommerceError({
-            code: "SDK.UNKNOWN_ERROR",
+            code: error instanceof HttpHandlerError ? error.code : "SDK.UNKNOWN_ERROR",
             message: String((error as any)?.message ?? error),
             timestamp: new Date().toISOString(),
             invalidInputs: [],
@@ -80,12 +89,3 @@ export const middlewareRetry =
       invalidInputs: [],
     });
   };
-
-const isRetryablePrefix = [
-  "GW.RATE_LIMIT",
-  "GW.QUOTA_LIMIT",
-  "GW.PROXY",
-  "GW.INTERNAL_SERVER_ERROR",
-  "GW.BLOCK",
-  "GW.TIMEOUT",
-];

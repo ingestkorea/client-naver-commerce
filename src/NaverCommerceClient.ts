@@ -12,16 +12,19 @@ import { middlewareAuth, middlewareIngestkoreaMetadata, middlewareRetry } from "
 
 export class NaverCommerceClient {
   config: CommerceClientResolvedConfig;
-  private httpHandler = new NodeHttpHandler({
-    connectionTimeout: 3000,
-    socketTimeout: 3000,
-    freeSocketTimeout: 1000,
-  });
+  private httpHandler;
 
   constructor(config: CommerceClientConfig) {
     this.config = {
       credentials: resolveCredentials(config),
+      httpHandler: {
+        connectionTimeout: config.httpHandler?.connectionTimeout ?? 2000,
+        socketTimeout: config.httpHandler?.socketTimeout ?? 3000,
+        keepAlive: config.httpHandler?.keepAlive ?? false,
+        family: 4,
+      },
     };
+    this.httpHandler = new NodeHttpHandler(this.config.httpHandler);
   }
 
   async send<T extends object, P extends MetadataBearer>(
